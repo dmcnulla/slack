@@ -19,56 +19,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+from mock import patch
+import unittest
+
 import slack
+import slack.files
 import slack.http_client
 
 
-def info(file, **kwargs):
-    """
-    Returns information about a file in your team.
-    """
-    params = {
-        'token':  slack.api_token,
-        'file':   file,
-    }
+slack.api_token = 'my_token'
 
-    for key, value in kwargs.items():
-        params[key] = value
-
-    return slack.http_client.get('files.info', params)
-
-def list(**kwargs):
-    """
-    Returns a list of files within the team.
-    """
-    params = { 'token':  slack.api_token }
-
-    for key, value in kwargs.items():
-        params[key] = value
-
-    return slack.http_client.get('files.list', params)
-
-def upload(**kwargs):
-    """
-    Creates or uploads an existing file.
-    """
-    data = { 'token':  slack.api_token }
-
-    for key, value in kwargs.items():
-        data[key] = value
-
-    return slack.http_client.post('files.upload', data)
-
-def delete(id, **kwargs):
-    """
-    Deletes a file within the team.
-    """
-    params = {
-        'token':  slack.api_token,
-        'id':  id
-    }
-
-    for key, value in kwargs.items():
-        params[key] = value
-
-    return slack.http_client.delete('files.delete', params)
+class TestFilesDelete(unittest.TestCase):
+    @patch.object(slack.http_client, 'get')
+    def test_info(self, http_get_mock):
+        slack.files.list()
+        http_get_mock.assert_called_with('files.list', {
+            'token': 'my_token',
+        })
